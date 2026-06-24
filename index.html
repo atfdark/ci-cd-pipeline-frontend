@@ -95,7 +95,7 @@
   </div>
 
   <script>
-    const API_BASE = "http://127.0.0.1:5000";
+    const API_BASE = "http://3.88.213.53:5000";
 
     const toast = msg =>
       alert(msg); // simple alert, can be replaced with a fancier toast
@@ -236,7 +236,7 @@
           <tr class="border-b">
             <td class="p-3">${s.student_name}</td>
             <td class="p-3">
-              <a class="text-blue-600 underline" href="https://ci-cd-workshop-frontend-rahul.s3.amazonaws.com/${s.file_name}" target="_blank">View File</a>
+              <a class="text-blue-600 underline" href="https://ci-cd-pipeline-alok.s3.amazonaws.com/${s.file_name}" target="_blank">View File</a>
             </td>
             <td class="p-3">${s.comments}</td>
             <td class="p-3">${s.submitted_at}</td>
@@ -251,16 +251,31 @@
     // ------------------------
     // DELETE SUBMISSION
     // ------------------------
-    async function deleteSubmission(id) {
-      if (!confirm("Delete this submission?")) return;
+   async function submitAssignment() {
+  try {
+    const fd = new FormData();
 
-      const res = await fetch(`${API_BASE}/delete_submission/${id}`, {
-        method: "DELETE"
-      });
+    fd.append("assignment_id", assignment_select.value);
+    fd.append("student_name", student_name.value);
+    fd.append("file", submission_file.files[0]);
+    fd.append("comments", comments.value);
 
-      toast((await res.json()).message);
-      loadSubmissions(assignment_select.value);
-    }
+    const res = await fetch(`${API_BASE}/submit_assignment`, {
+      method: "POST",
+      body: fd
+    });
+
+    const data = await res.json();
+
+    alert(data.message || JSON.stringify(data));
+
+    loadSubmissions(assignment_select.value);
+
+  } catch (err) {
+    console.error(err);
+    alert("Submission Failed: " + err.message);
+  }
+}
 
     // ------------------------
     // INITIAL LOAD
