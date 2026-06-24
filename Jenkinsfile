@@ -10,6 +10,12 @@ pipeline {
     }
 
     stages {
+        stage('Debug') {
+            steps {
+                sh 'echo BUCKET=$BUCKET'
+            }
+        }
+
         stage('Deploy to S3') {
             steps {
                 sh """
