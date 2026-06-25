@@ -205,21 +205,47 @@
     // ------------------------
     // SUBMIT ASSIGNMENT
     // ------------------------
-    async function submitAssignment() {
-      const fd = new FormData();
-      fd.append("assignment_id", assignment_select.value);
-      fd.append("student_name", student_name.value);
-      fd.append("file", submission_file.files[0]);
-      fd.append("comments", comments.value);
+   async function submitAssignment() {
+  try {
 
-      const res = await fetch(`${API_BASE}/submit_assignment`, {
-        method: "POST",
-        body: fd
-      });
-
-      toast((await res.json()).message);
-      loadSubmissions(assignment_select.value);
+    if (!assignment_select.value) {
+      alert("Please select an assignment.");
+      return;
     }
+
+    if (!student_name.value.trim()) {
+      alert("Enter student name.");
+      return;
+    }
+
+    if (submission_file.files.length === 0) {
+      alert("Please choose a file.");
+      return;
+    }
+
+    const fd = new FormData();
+
+    fd.append("assignment_id", assignment_select.value);
+    fd.append("student_name", student_name.value);
+    fd.append("comments", comments.value);
+    fd.append("file", submission_file.files[0]);
+
+    const res = await fetch(`${API_BASE}/submit_assignment`, {
+      method: "POST",
+      body: fd
+    });
+
+    const data = await res.json();
+
+    alert(data.message || JSON.stringify(data));
+
+    loadSubmissions(assignment_select.value);
+
+  } catch(err) {
+    console.error(err);
+    alert(err);
+  }
+}
 
     // ------------------------
     // LOAD SUBMISSIONS
